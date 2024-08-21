@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import pl.inpost.recruitmenttask.R
-import pl.inpost.recruitmenttask.presentation.shipmentList.ShipmentListFragment
+import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentListFragment
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {

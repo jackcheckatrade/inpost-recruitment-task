@@ -14,3 +14,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "InPost Recruitment Task"
 include ':app'
+include ':core:common'
+include ':core:design-system'
+include ':shipment:api'
+include ':shipment:implementation'
+include ':core:android-common'
