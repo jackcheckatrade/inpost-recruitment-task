@@ -70,7 +70,7 @@ data class InPostTypographySystem(
                 fontSize = 11.sp,
                 lineHeight = 16.sp,
                 fontFamily = montserratFamily,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             ),
             value = TextStyle(
                 fontSize = 15.sp,
@@ -82,7 +82,7 @@ data class InPostTypographySystem(
                 fontSize = 15.sp,
                 lineHeight = 24.sp,
                 fontFamily = montserratFamily,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Medium
             ),
             divider = TextStyle(
                 fontSize = 13.sp,

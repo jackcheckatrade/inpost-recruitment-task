@@ -23,6 +23,7 @@ dependencies {
 
     implementation(project(":core:common"))
     implementation(project(":core:android-common"))
+    implementation(project(":core:design-system"))
     implementation(project(":shipment:api"))
 
     implementation(libs.androidx.core.ktx)

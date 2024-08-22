@@ -25,6 +25,8 @@ android {
 
 dependencies {
 
+    implementation(project(":core:android-common"))
+
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.kotlin.bom))
     implementation(libs.androidx.appcompat)

@@ -19,4 +19,6 @@
     <string name="menu_ready_to_pickup">Gotowe do odbioru</string>
     <string name="menu_other">Pozostałe</string>
     <string name="menu_all">Wszystkie</string>
+
+    <string name="more">więcej</string>
 </resources>

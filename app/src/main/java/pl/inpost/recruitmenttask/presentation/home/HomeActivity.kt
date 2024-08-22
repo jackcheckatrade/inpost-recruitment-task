@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import pl.inpost.design_system.theme.InPostTheme
+import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentListScreen
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -27,12 +28,7 @@ class HomeActivity : AppCompatActivity() {
     @Composable
     fun HomeActivityContent() {
         InPostTheme {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Text("Home", modifier = Modifier.align(Alignment.Center))
-            }
+            ShipmentListScreen()
         }
     }
 }
