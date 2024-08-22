@@ -1,21 +1,38 @@
 package pl.inpost.recruitmenttask.presentation.home
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
-import pl.inpost.recruitmenttask.R
-import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentListFragment
+import pl.inpost.design_system.theme.InPostTheme
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, ShipmentListFragment.newInstance())
-                .commitNow()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setContent {
+            HomeActivityContent()
+        }
+    }
+
+    @Composable
+    fun HomeActivityContent() {
+        InPostTheme {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text("Home", modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 }
