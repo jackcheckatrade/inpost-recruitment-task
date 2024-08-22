@@ -193,13 +193,13 @@ fun ShipmentCard(
                     }
 
                     val dateTimeDisplayable = when (shipment.status) {
-                        ShipmentStatus.READY_TO_PICKUP -> shipment.storedDate
+                        ShipmentStatus.READY_TO_PICKUP -> shipment.expiryDate
                         ShipmentStatus.DELIVERED -> shipment.pickUpDate
                         else -> null
                     }
                     StatusWithDate(
                         status = headerString.orEmpty(),
-                        dayOfWeekShort = shipment.pickUpDate?.dayOfWeekShort.orEmpty(),
+                        dayOfWeekShort = dateTimeDisplayable?.dayOfWeekShort.orEmpty(),
                         dateString = dateTimeDisplayable?.date.orEmpty(),
                         hourString = dateTimeDisplayable?.time.orEmpty(),
                         modifier = Modifier.weight(1f)
