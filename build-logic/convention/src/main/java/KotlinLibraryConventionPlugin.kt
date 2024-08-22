@@ -16,6 +16,7 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
             kotlinConfigPure()
             dependencies {
                 implementation(libs.findLibrary("inject-annotation").get())
+                implementation(libs.findLibrary("kotlin-flow").get())
             }
         }
     }

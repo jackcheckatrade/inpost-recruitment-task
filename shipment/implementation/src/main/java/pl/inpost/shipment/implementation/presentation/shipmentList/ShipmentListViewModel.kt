@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.inpost.shipment.api.usecase.GetGroupedAndSortedShipments
+import pl.inpost.shipment.api.usecase.ObserveGroupedAndSortedShipments
+import pl.inpost.shipment.api.usecase.RefreshShipmentsUseCase
 import pl.inpost.shipment.implementation.presentation.DateFormatter
 import pl.inpost.shipment.implementation.presentation.model.ShipmentDisplayable
 import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentList.ViewState.Companion.DEFAULT_STATE
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShipmentListViewModel @Inject constructor(
-    private val getGroupedAndSortedShipments: GetGroupedAndSortedShipments,
+    private val observeGroupedAndSortedShipments: ObserveGroupedAndSortedShipments,
+    private val refreshShipmentsUseCase: RefreshShipmentsUseCase,
     private val dateFormatter: DateFormatter,
     private val shipmentStatusMapper: ShipmentStatusMapper
 ) : ViewModel(), ShipmentList.Interaction {
@@ -24,6 +26,7 @@ class ShipmentListViewModel @Inject constructor(
     val viewState = _viewState.asStateFlow()
 
     init {
+        observeShipments()
         getShipments()
     }
 
@@ -33,7 +36,7 @@ class ShipmentListViewModel @Inject constructor(
                 isLoading = true
             )
         }
-        fetchShipments()
+        refreshShipments()
     }
 
     override fun refresh() {
@@ -42,35 +45,42 @@ class ShipmentListViewModel @Inject constructor(
                 isSwipeRefreshing = true
             )
         }
-        fetchShipments()
+        refreshShipments()
     }
 
     override fun archiveShipment(shipmentId: String) {
         TODO("Not yet implemented")
     }
 
-    private fun fetchShipments() {
+    private fun refreshShipments() {
         viewModelScope.launch {
-            val shipments = getGroupedAndSortedShipments()
-            _viewState.update { state ->
-                state.copy(
-                    highlightedShipments = shipments[true]?.map {
-                        ShipmentDisplayable.fromDomain(
-                            it,
-                            shipmentStatusMapper,
-                            dateFormatter
-                        )
-                    } ?: emptyList(),
-                    shipments = shipments[false]?.map {
-                        ShipmentDisplayable.fromDomain(
-                            it,
-                            shipmentStatusMapper,
-                            dateFormatter
-                        )
-                    } ?: emptyList(),
-                    isLoading = false,
-                    isSwipeRefreshing = false
-                )
+            refreshShipmentsUseCase()
+        }
+    }
+
+    private fun observeShipments() {
+        viewModelScope.launch {
+            observeGroupedAndSortedShipments().collect { shipments ->
+                _viewState.update { state ->
+                    state.copy(
+                        highlightedShipments = shipments[true]?.map {
+                            ShipmentDisplayable.fromDomain(
+                                it,
+                                shipmentStatusMapper,
+                                dateFormatter
+                            )
+                        } ?: emptyList(),
+                        shipments = shipments[false]?.map {
+                            ShipmentDisplayable.fromDomain(
+                                it,
+                                shipmentStatusMapper,
+                                dateFormatter
+                            )
+                        } ?: emptyList(),
+                        isLoading = false,
+                        isSwipeRefreshing = false
+                    )
+                }
             }
         }
     }

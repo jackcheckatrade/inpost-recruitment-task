@@ -38,6 +38,7 @@ androidGradlePlugin = "8.5.2"
 kotlin = "2.0.0"
 hilt = "2.51.1"
 kotlinJvm = "2.0.0"
+kotlinFlow = "1.9.0-RC.2"
 ksp = "2.0.0-1.0.24"
 roomGradlePlugin = "2.6.1"
 
@@ -53,8 +54,10 @@ androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-lived
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 inject-annotation = { group = "javax.inject", name = "javax.inject", version = "1" }
+kotlin-flow = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinFlow" }
 
 # Compose
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose" }

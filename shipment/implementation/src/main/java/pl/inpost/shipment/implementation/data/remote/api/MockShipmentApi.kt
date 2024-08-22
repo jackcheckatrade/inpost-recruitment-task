@@ -1,14 +1,17 @@
-package pl.inpost.shipment.implementation.data.api
+package pl.inpost.shipment.implementation.data.remote.api
 
 import android.content.Context
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import pl.inpost.shipment.api.model.ShipmentStatus
-import pl.inpost.shipment.api.model.ShipmentType
+import pl.inpost.shipment.implementation.data.remote.model.ShipmentType
 import pl.inpost.shipment.implementation.R
-import pl.inpost.shipment.implementation.data.remote.ShipmentNetwork
-import pl.inpost.shipment.implementation.data.remote.ShipmentsResponse
+import pl.inpost.shipment.implementation.data.remote.model.ShipmentNetwork
+import pl.inpost.shipment.implementation.data.remote.model.ShipmentsResponse
+import pl.inpost.shipment.implementation.data.remote.model.CustomerNetwork
+import pl.inpost.shipment.implementation.data.remote.model.EventLogNetwork
+import pl.inpost.shipment.implementation.data.remote.model.OperationsNetwork
 import java.time.ZonedDateTime
 import kotlin.random.Random
 
@@ -44,10 +47,9 @@ private fun mockShipmentNetwork(
     number: String = Random.nextLong(1, 9999_9999_9999_9999).toString(),
     type: ShipmentType = ShipmentType.PARCEL_LOCKER,
     status: ShipmentStatus = ShipmentStatus.DELIVERED,
-    sender: pl.inpost.shipment.implementation.data.remote.CustomerNetwork? = mockCustomerNetwork(),
-    receiver: pl.inpost.shipment.implementation.data.remote.CustomerNetwork? = mockCustomerNetwork(),
-    operations: pl.inpost.shipment.implementation.data.remote.OperationsNetwork = mockOperationsNetwork(),
-    eventLog: List<pl.inpost.shipment.implementation.data.remote.EventLogNetwork> = emptyList(),
+    sender: CustomerNetwork? = mockCustomerNetwork(),
+    receiver: CustomerNetwork? = mockCustomerNetwork(),
+    operations: OperationsNetwork = mockOperationsNetwork(),
     openCode: String? = null,
     expireDate: ZonedDateTime? = null,
     storedDate: ZonedDateTime? = null,
@@ -56,7 +58,6 @@ private fun mockShipmentNetwork(
     number = number,
     shipmentType = type.name,
     status = status,
-    eventLog = eventLog,
     openCode = openCode,
     expiryDate = expireDate,
     storedDate = storedDate,
@@ -70,7 +71,7 @@ private fun mockCustomerNetwork(
     email: String = "name@email.com",
     phoneNumber: String = "123 123 123",
     name: String = "Jan Kowalski"
-) = pl.inpost.shipment.implementation.data.remote.CustomerNetwork(
+) = CustomerNetwork(
     email = email,
     phoneNumber = phoneNumber,
     name = name
@@ -83,7 +84,7 @@ private fun mockOperationsNetwork(
     highlight: Boolean = false,
     expandAvizo: Boolean = false,
     endOfWeekCollection: Boolean = false
-) = pl.inpost.shipment.implementation.data.remote.OperationsNetwork(
+) = OperationsNetwork(
     manualArchive = manualArchive,
     delete = delete,
     collect = collect,

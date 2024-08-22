@@ -1,4 +1,4 @@
-package pl.inpost.shipment.api.model
+package pl.inpost.shipment.implementation.data.remote.model
 
 enum class ShipmentType {
     PARCEL_LOCKER,

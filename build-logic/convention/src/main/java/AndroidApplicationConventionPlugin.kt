@@ -17,6 +17,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 apply(libs.findPlugin("inpost-android-application-compose").pluginId)
                 apply(libs.findPlugin("ksp").pluginId)
                 apply(libs.findPlugin("inpost-hilt").pluginId)
+                apply(libs.findPlugin("inpost-room").pluginId)
             }
 
             extensions.configure<ApplicationExtension> {

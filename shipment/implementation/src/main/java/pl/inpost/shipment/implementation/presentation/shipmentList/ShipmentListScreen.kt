@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -70,12 +72,24 @@ fun ShipmentListScreenContent(
         Box(
             contentAlignment = Alignment.Center,
         ) {
+            val refreshState = rememberPullToRefreshState()
             PullToRefreshBox(
                 isRefreshing = viewState.isSwipeRefreshing,
                 onRefresh = onPullToRefresh,
                 modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center,
+                state = refreshState,
+                indicator = {
+                    Indicator(
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        isRefreshing = viewState.isSwipeRefreshing,
+                        state = refreshState,
+                        containerColor = InPostTheme.colorSystem.backgroundPrimary,
+                        color = InPostTheme.colorSystem.accentPrimary
+                    )
+                }
             ) {
                 if (viewState.isLoading) {
                     CircularProgressIndicator(
@@ -84,7 +98,6 @@ fun ShipmentListScreenContent(
                 } else {
                     LazyColumn(
                         modifier = Modifier
-                            .padding(innerPadding)
                             .background(color = InPostTheme.colorSystem.backgroundPrimary)
                             .fillMaxSize()
                     ) {

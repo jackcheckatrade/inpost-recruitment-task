@@ -1,4 +1,4 @@
-package pl.inpost.shipment.implementation.data.remote
+package pl.inpost.shipment.implementation.data.remote.model
 
 import pl.inpost.shipment.api.model.Customer
 

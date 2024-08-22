@@ -1,4 +1,4 @@
-package pl.inpost.shipment.implementation.data.api
+package pl.inpost.shipment.implementation.data.remote.api
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
