@@ -20,5 +20,13 @@
     <string name="menu_other">Pozostałe</string>
     <string name="menu_all">Wszystkie</string>
 
+    <string name="monday_short">pon</string>
+    <string name="tuesday_short">wt</string>
+    <string name="wednesday_short">śr</string>
+    <string name="thursday_short">czw</string>
+    <string name="friday_short">pt</string>
+    <string name="saturday_short">sob</string>
+    <string name="sunday_short">nie</string>
+
     <string name="more">więcej</string>
 </resources>

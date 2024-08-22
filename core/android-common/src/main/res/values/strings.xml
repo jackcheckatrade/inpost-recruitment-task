@@ -15,6 +15,14 @@
     <string name="status_ready_to_pickup">Ready to collect</string>
     <string name="status_returned_to_sender">Returned to sender</string>
 
+    <string name="monday_short">mon</string>
+    <string name="tuesday_short">tue</string>
+    <string name="wednesday_short">wed</string>
+    <string name="thursday_short">thu</string>
+    <string name="friday_short">fri</string>
+    <string name="saturday_short">sat</string>
+    <string name="sunday_short">sun</string>
+
     <string name="menu_ready_to_pickup">Ready to collect</string>
     <string name="menu_other">Other</string>
     <string name="menu_all">All</string>

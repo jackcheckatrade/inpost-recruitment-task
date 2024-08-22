@@ -2,7 +2,6 @@ package pl.inpost.shipment.implementation.data.api
 
 import android.content.Context
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import pl.inpost.shipment.api.model.ShipmentStatus
@@ -15,7 +14,7 @@ import kotlin.random.Random
 
 class MockShipmentApi(
     @ApplicationContext private val context: Context,
-    apiTypeAdapter: ApiTypeAdapter
+    private val moshi: Moshi
 ) : ShipmentApi {
 
     private val response by lazy {
@@ -23,11 +22,8 @@ class MockShipmentApi(
             .bufferedReader()
             .use { it.readText() }
 
-        val jsonAdapter = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .add(apiTypeAdapter)
-            .build()
-            .adapter(ShipmentsResponse::class.java)
+        val jsonAdapter = moshi.adapter(ShipmentsResponse::class.java)
+
 
         jsonAdapter.fromJson(json) as ShipmentsResponse
     }
@@ -59,7 +55,7 @@ private fun mockShipmentNetwork(
 ) = ShipmentNetwork(
     number = number,
     shipmentType = type.name,
-    status = status.name,
+    status = status,
     eventLog = eventLog,
     openCode = openCode,
     expiryDate = expireDate,

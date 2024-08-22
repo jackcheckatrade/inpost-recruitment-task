@@ -1,12 +1,15 @@
 package pl.inpost.shipment.implementation.data.remote
 
+import com.squareup.moshi.JsonClass
 import pl.inpost.shipment.api.model.Shipment
+import pl.inpost.shipment.api.model.ShipmentStatus
 import java.time.ZonedDateTime
 
+@JsonClass(generateAdapter = true)
 data class ShipmentNetwork(
     val number: String,
     val shipmentType: String,
-    val status: String,
+    val status: ShipmentStatus ,
     val eventLog: List<EventLogNetwork>,
     val openCode: String?,
     val expiryDate: ZonedDateTime?,

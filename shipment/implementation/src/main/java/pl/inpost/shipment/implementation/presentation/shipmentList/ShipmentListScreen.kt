@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,9 +14,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,10 +33,9 @@ import pl.inpost.design_system.component.appbar.SimpleAppBar
 import pl.inpost.design_system.component.button.DetailArrowButton
 import pl.inpost.design_system.component.divider.HorizontalDivider
 import pl.inpost.design_system.theme.InPostTheme
-import pl.inpost.shipment.api.model.Customer
-import pl.inpost.shipment.api.model.Operations
-import pl.inpost.shipment.api.model.Shipment
 import pl.inpost.shipment.implementation.R
+import pl.inpost.shipment.implementation.presentation.model.DateTimeDisplayable
+import pl.inpost.shipment.implementation.presentation.model.ShipmentDisplayable
 
 
 @Composable
@@ -44,15 +44,16 @@ fun ShipmentListScreen(
 ) {
     val viewState by viewModel.viewState.collectAsState()
     ShipmentListScreenContent(
-        viewState.highlightedShipments,
-        viewState.shipments
+        viewState,
+        onPullToRefresh = viewModel::refresh
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShipmentListScreenContent(
-    highlightedShipments: List<Shipment>,
-    shipments: List<Shipment>,
+    viewState: ShipmentList.ViewState,
+    onPullToRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -61,56 +62,60 @@ fun ShipmentListScreenContent(
         },
         modifier = modifier
     ) { innerPadding ->
-        LazyColumn(
+        PullToRefreshBox(
+            isRefreshing = viewState.isSwipeRefreshing,
+            onRefresh = onPullToRefresh,
             modifier = Modifier
-                .padding(innerPadding)
-                .background(color = InPostTheme.colorSystem.backgroundPrimary)
-                .fillMaxHeight()
+                .fillMaxSize()
         ) {
-            if (highlightedShipments.isNotEmpty())
-            item {
-                HorizontalDivider(
-                    title = "Ready to collect",
-                    modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
-                )
-            }
-            itemsIndexed(highlightedShipments) { index, shipment ->
-                ShipmentCard(
-                    parcelNumber = shipment.number,
-                    status = shipment.status,
-                    sender = shipment.sender?.name ?: "",
-                    dayOfWeekShort = "Mon",
-                    dateString = "12.12.2021",
-                    hourString = "12:00",
-                    onDetailsButtonClick = {}
-                )
-                if (index < highlightedShipments.size - 1)
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .background(color = InPostTheme.colorSystem.backgroundPrimary)
+                    .fillMaxSize()
+            ) {
+                if (viewState.highlightedShipments.isNotEmpty())
+                    item {
+                        HorizontalDivider(
+                            title = "Ready to collect",
+                            modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
+                        )
+                    }
+                itemsIndexed(viewState.highlightedShipments) { index, shipment ->
+                    ShipmentCard(
+                        parcelNumber = shipment.number,
+                        status = shipment.status,
+                        sender = shipment.sender ?: "",
+                        dayOfWeekShort = "Mon",
+                        dateString = "12.12.2021",
+                        hourString = "12:00",
+                        onDetailsButtonClick = {})
+                    if (index < viewState.highlightedShipments.size - 1)
+                        Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
+                }
+                if (viewState.shipments.isNotEmpty())
+                    item {
+                        HorizontalDivider(
+                            title = "Other",
+                            modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
+                        )
+                    }
+                itemsIndexed(viewState.shipments) { index, shipment ->
+                    ShipmentCard(
+                        parcelNumber = shipment.number,
+                        status = shipment.status,
+                        sender = shipment.sender,
+                        dayOfWeekShort = "Mon",
+                        dateString = "12.12.2021",
+                        hourString = "12:00",
+                        onDetailsButtonClick = {}
+                    )
                     Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
-            }
-            if (shipments.isNotEmpty())
-            item {
-                HorizontalDivider(
-                    title = "Other",
-                    modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
-                )
-            }
-            itemsIndexed(shipments) { index, shipment ->
-                ShipmentCard(
-                    parcelNumber = shipment.number,
-                    status = shipment.status,
-                    sender = shipment.sender?.name ?: "",
-                    dayOfWeekShort = "Mon",
-                    dateString = "12.12.2021",
-                    hourString = "12:00",
-                    onDetailsButtonClick = {}
-                )
-                Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
+                }
             }
         }
     }
-
 }
-
 
 @Composable
 fun ShipmentCard(
@@ -256,57 +261,52 @@ fun StatusWithDate(
 @Composable
 private fun ShipmentListScreenPreview() {
     ShipmentListScreenContent(
-        highlightedShipments = listOf(
-            Shipment(
-                number = "123456789",
-                status = "Ready to collect",
-                sender = Customer(
-                    name = "Sender name",
-                    phoneNumber = "123456789",
-                    email = "email@email.com"
-                ),
-                pickUpDate = null,
-                expiryDate = null,
-                storedDate = null,
-                operations = Operations(
-                    highlight = true,
-                    manualArchive = false,
-                    expandAvizo = false,
-                    endOfWeekCollection = false,
-                    delete = false,
-                    collect = false,
-                ),
-                eventLog = emptyList(),
-                openCode = null,
-                receiver = null,
-                shipmentType = "Parcel",
+        ShipmentList.ViewState.DEFAULT_STATE.copy(
+            highlightedShipments = listOf(
+                ShipmentDisplayable(
+                    number = "123456789",
+                    status = "Ready to collect",
+                    sender = "Sender name 1",
+                    pickUpDate = DateTimeDisplayable(
+                        dayOfWeekShort = "Mon",
+                        date = "12.12.2021",
+                        time = "12:00"
+                    ),
+                    expiryDate = DateTimeDisplayable(
+                        dayOfWeekShort = "Mon",
+                        date = "12.12.2021",
+                        time = "12:00"
+                    ),
+                    storedDate = DateTimeDisplayable(
+                        dayOfWeekShort = "Mon",
+                        date = "12.12.2021",
+                        time = "12:00"
+                    ),
+                )
+            ),
+            shipments = listOf(
+                ShipmentDisplayable(
+                    number = "123456789",
+                    status = "Ready to collect",
+                    sender = "Sender name 2",
+                    pickUpDate = DateTimeDisplayable(
+                        dayOfWeekShort = "Mon",
+                        date = "12.12.2021",
+                        time = "12:00"
+                    ),
+                    expiryDate = DateTimeDisplayable(
+                        dayOfWeekShort = "Mon",
+                        date = "12.12.2021",
+                        time = "12:00"
+                    ),
+                    storedDate = DateTimeDisplayable(
+                        dayOfWeekShort = "Mon",
+                        date = "12.12.2021",
+                        time = "12:00"
+                    ),
+                )
             )
         ),
-        shipments = listOf(
-            Shipment(
-                number = "123456789",
-                status = "Ready to collect",
-                sender = Customer(
-                    name = "Sender name 2",
-                    phoneNumber = "123456789",
-                    email = "email@email.com"
-                ),
-                pickUpDate = null,
-                expiryDate = null,
-                storedDate = null,
-                operations = Operations(
-                    highlight = true,
-                    manualArchive = false,
-                    expandAvizo = false,
-                    endOfWeekCollection = false,
-                    delete = false,
-                    collect = false,
-                ),
-                eventLog = emptyList(),
-                openCode = null,
-                receiver = null,
-                shipmentType = "Parcel",
-            )
-        )
+        onPullToRefresh = {}
     )
 }

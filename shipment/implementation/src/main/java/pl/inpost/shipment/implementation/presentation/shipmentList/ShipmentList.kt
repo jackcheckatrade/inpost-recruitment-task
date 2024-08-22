@@ -1,18 +1,22 @@
 package pl.inpost.shipment.implementation.presentation.shipmentList
 
-import pl.inpost.shipment.api.model.Shipment
+import pl.inpost.shipment.implementation.presentation.model.ShipmentDisplayable
 import javax.annotation.concurrent.Immutable
 
 interface ShipmentList {
     @Immutable
     data class ViewState(
-        val highlightedShipments: List<Shipment>,
-        val shipments: List<Shipment>
-    ){
+        val highlightedShipments: List<ShipmentDisplayable>,
+        val shipments: List<ShipmentDisplayable>,
+        val isLoading: Boolean,
+        val isSwipeRefreshing: Boolean
+    ) {
         companion object {
             val DEFAULT_STATE = ViewState(
                 highlightedShipments = emptyList(),
-                shipments = emptyList()
+                shipments = emptyList(),
+                isLoading = false,
+                isSwipeRefreshing = false
             )
         }
     }

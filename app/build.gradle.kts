@@ -35,6 +35,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.swiperefreshlayout)
+
+    ksp(libs.moshi.kotlin.codegen)
     implementation(libs.moshi.kotlin)
 
     testImplementation(libs.junit)
