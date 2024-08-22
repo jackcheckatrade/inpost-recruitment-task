@@ -3,6 +3,7 @@ package pl.inpost.shipment.implementation.presentation.shipmentList
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,12 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.inpost.design_system.component.appbar.SimpleAppBar
 import pl.inpost.design_system.component.button.DetailArrowButton
 import pl.inpost.design_system.component.divider.HorizontalDivider
 import pl.inpost.design_system.theme.InPostTheme
+import pl.inpost.shipment.api.model.ShipmentStatus
 import pl.inpost.shipment.implementation.R
 import pl.inpost.shipment.implementation.presentation.model.DateTimeDisplayable
 import pl.inpost.shipment.implementation.presentation.model.ShipmentDisplayable
@@ -62,56 +67,70 @@ fun ShipmentListScreenContent(
         },
         modifier = modifier
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = viewState.isSwipeRefreshing,
-            onRefresh = onPullToRefresh,
-            modifier = Modifier
-                .fillMaxSize()
+        Box(
+            contentAlignment = Alignment.Center,
         ) {
-            LazyColumn(
+            PullToRefreshBox(
+                isRefreshing = viewState.isSwipeRefreshing,
+                onRefresh = onPullToRefresh,
                 modifier = Modifier
-                    .padding(innerPadding)
-                    .background(color = InPostTheme.colorSystem.backgroundPrimary)
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                if (viewState.highlightedShipments.isNotEmpty())
-                    item {
-                        HorizontalDivider(
-                            title = "Ready to collect",
-                            modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
-                        )
-                    }
-                itemsIndexed(viewState.highlightedShipments) { index, shipment ->
-                    ShipmentCard(
-                        parcelNumber = shipment.number,
-                        status = shipment.status,
-                        sender = shipment.sender ?: "",
-                        dayOfWeekShort = "Mon",
-                        dateString = "12.12.2021",
-                        hourString = "12:00",
-                        onDetailsButtonClick = {})
-                    if (index < viewState.highlightedShipments.size - 1)
-                        Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
-                }
-                if (viewState.shipments.isNotEmpty())
-                    item {
-                        HorizontalDivider(
-                            title = "Other",
-                            modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
-                        )
-                    }
-                itemsIndexed(viewState.shipments) { index, shipment ->
-                    ShipmentCard(
-                        parcelNumber = shipment.number,
-                        status = shipment.status,
-                        sender = shipment.sender,
-                        dayOfWeekShort = "Mon",
-                        dateString = "12.12.2021",
-                        hourString = "12:00",
-                        onDetailsButtonClick = {}
+                if (viewState.isLoading) {
+                    CircularProgressIndicator(
+                        color = InPostTheme.colorSystem.accentPrimary,
                     )
-                    Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .background(color = InPostTheme.colorSystem.backgroundPrimary)
+                            .fillMaxSize()
+                    ) {
+                        if (viewState.isEmpty()) {
+                            item {
+                                Text(
+                                    text = stringResource(id = R.string.no_shipments),
+                                    style = InPostTheme.typographySystem.value.copy(textAlign = TextAlign.Center),
+                                    modifier = Modifier
+                                        .padding(InPostTheme.dimensSystem.x4)
+                                        .fillMaxWidth()
+                                )
+                            }
+                        }
+                        if (viewState.highlightedShipments.isNotEmpty())
+                            item {
+                                HorizontalDivider(
+                                    title = stringResource(id = R.string.status_ready_to_pickup),
+                                    modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
+                                )
+                            }
+                        itemsIndexed(viewState.highlightedShipments) { index, shipment ->
+                            ShipmentCard(
+                                shipment = shipment,
+                                onDetailsButtonClick = {}
+                            )
+                            if (index < viewState.highlightedShipments.size - 1)
+                                Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
+                        }
+                        if (viewState.shipments.isNotEmpty())
+                            item {
+                                HorizontalDivider(
+                                    title = stringResource(id = R.string.group_other),
+                                    modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
+                                )
+                            }
+                        items(viewState.shipments) { shipment ->
+                            ShipmentCard(
+                                shipment = shipment,
+                                onDetailsButtonClick = {}
+                            )
+                            Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
+                        }
+                    }
                 }
+
             }
         }
     }
@@ -119,17 +138,12 @@ fun ShipmentListScreenContent(
 
 @Composable
 fun ShipmentCard(
-    parcelNumber: String,
-    status: String,
-    sender: String,
-    dayOfWeekShort: String,
-    dateString: String,
-    hourString: String,
+    shipment: ShipmentDisplayable,
     onDetailsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RectangleShape,
         colors = CardDefaults.elevatedCardColors(
@@ -151,7 +165,9 @@ fun ShipmentCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TitleWithValue(
-                    title = "Parcel number", value = parcelNumber, bold = false
+                    title = stringResource(id = R.string.parcel_number_header),
+                    value = shipment.number,
+                    bold = false
                 )
                 Image(
                     painter = painterResource(id = R.drawable.ic_paczkomat),
@@ -165,15 +181,30 @@ fun ShipmentCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TitleWithValue(
-                    title = "Status", value = status
+                    title = stringResource(id = R.string.status_header),
+                    value = shipment.statusString
                 )
-                StatusWithDate(
-                    status = status,
-                    dayOfWeekShort = dayOfWeekShort,
-                    dateString = dateString,
-                    hourString = hourString,
-                    modifier = Modifier.weight(1f)
-                )
+
+                if (shipment.isDateVisible()) {
+                    val headerString = when (shipment.status) {
+                        ShipmentStatus.READY_TO_PICKUP -> stringResource(id = R.string.ready_to_pickup_date_header)
+                        ShipmentStatus.DELIVERED -> stringResource(id = R.string.delivered_date_header)
+                        else -> null
+                    }
+
+                    val dateTimeDisplayable = when (shipment.status) {
+                        ShipmentStatus.READY_TO_PICKUP -> shipment.storedDate
+                        ShipmentStatus.DELIVERED -> shipment.pickUpDate
+                        else -> null
+                    }
+                    StatusWithDate(
+                        status = headerString.orEmpty(),
+                        dayOfWeekShort = shipment.pickUpDate?.dayOfWeekShort.orEmpty(),
+                        dateString = dateTimeDisplayable?.date.orEmpty(),
+                        hourString = dateTimeDisplayable?.time.orEmpty(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -181,9 +212,9 @@ fun ShipmentCard(
                 verticalAlignment = Alignment.Bottom
             ) {
                 TitleWithValue(
-                    title = "Sender", value = sender
+                    title = stringResource(id = R.string.sender_header), value = shipment.sender
                 )
-                DetailArrowButton()
+                DetailArrowButton(onClick = onDetailsButtonClick)
             }
         }
     }
@@ -265,7 +296,8 @@ private fun ShipmentListScreenPreview() {
             highlightedShipments = listOf(
                 ShipmentDisplayable(
                     number = "123456789",
-                    status = "Ready to collect",
+                    status = ShipmentStatus.READY_TO_PICKUP,
+                    statusString = "Ready to collect",
                     sender = "Sender name 1",
                     pickUpDate = DateTimeDisplayable(
                         dayOfWeekShort = "Mon",
@@ -287,7 +319,8 @@ private fun ShipmentListScreenPreview() {
             shipments = listOf(
                 ShipmentDisplayable(
                     number = "123456789",
-                    status = "Ready to collect",
+                    status = ShipmentStatus.READY_TO_PICKUP,
+                    statusString = "Ready to collect",
                     sender = "Sender name 2",
                     pickUpDate = DateTimeDisplayable(
                         dayOfWeekShort = "Mon",

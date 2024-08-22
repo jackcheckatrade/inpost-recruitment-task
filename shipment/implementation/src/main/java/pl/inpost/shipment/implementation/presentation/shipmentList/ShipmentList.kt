@@ -19,6 +19,8 @@ interface ShipmentList {
                 isSwipeRefreshing = false
             )
         }
+
+        fun isEmpty() = shipments.isEmpty() && highlightedShipments.isEmpty()
     }
 
     interface Interaction {

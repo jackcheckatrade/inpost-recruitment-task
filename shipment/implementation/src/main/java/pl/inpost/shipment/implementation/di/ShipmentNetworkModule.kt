@@ -12,21 +12,25 @@ import pl.inpost.shipment.implementation.data.api.ApiTypeAdapter
 import pl.inpost.shipment.implementation.data.api.MockShipmentApi
 import pl.inpost.shipment.implementation.data.api.ShipmentApi
 import pl.inpost.shipment.implementation.data.api.ShipmentStatusJsonAdapter
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 class ShipmentNetworkModule {
     @Provides
-    fun shipmentApi(
-        @ApplicationContext context: Context,
-        moshi: Moshi
-    ): ShipmentApi =
-        MockShipmentApi(context, moshi)
+    @Singleton
+    fun provideMoshi(apiTypeAdapter: ApiTypeAdapter): Moshi =
+        Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .add(ShipmentStatusJsonAdapter())
+            .add(apiTypeAdapter)
+            .build()
 
     @Provides
-    fun provideMoshi(apiTypeAdapter: ApiTypeAdapter): Moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .add(apiTypeAdapter)
-        .add(ShipmentStatusJsonAdapter())
-        .build()
+    @Singleton
+    fun shipmentApi(
+        @ApplicationContext context: Context,
+        moshi: Moshi,
+    ): ShipmentApi =
+        MockShipmentApi(context, moshi)
 }
