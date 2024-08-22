@@ -1,5 +1,7 @@
 package pl.inpost.shipment.implementation.data.remote
 
+import pl.inpost.shipment.api.model.Operations
+
 /**
  * @param manualArchive - shipment can be manually (gesture) archived
  * @param delete - shipment can be manually deleted
@@ -15,4 +17,22 @@ data class OperationsNetwork(
     val highlight: Boolean,
     val expandAvizo: Boolean,
     val endOfWeekCollection: Boolean
-)
+) {
+    constructor(operations: Operations) : this(
+        operations.manualArchive,
+        operations.delete,
+        operations.collect,
+        operations.highlight,
+        operations.expandAvizo,
+        operations.endOfWeekCollection
+    )
+
+    fun toDomain(): Operations = Operations(
+        manualArchive = manualArchive,
+        delete = delete,
+        collect = collect,
+        highlight = highlight,
+        expandAvizo = expandAvizo,
+        endOfWeekCollection = endOfWeekCollection
+    )
+}

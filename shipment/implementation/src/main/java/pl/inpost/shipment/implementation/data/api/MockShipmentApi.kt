@@ -5,6 +5,8 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
+import pl.inpost.shipment.api.model.ShipmentStatus
+import pl.inpost.shipment.api.model.ShipmentType
 import pl.inpost.shipment.implementation.R
 import pl.inpost.shipment.implementation.data.remote.ShipmentNetwork
 import pl.inpost.shipment.implementation.data.remote.ShipmentsResponse
@@ -44,8 +46,8 @@ class MockShipmentApi(
 
 private fun mockShipmentNetwork(
     number: String = Random.nextLong(1, 9999_9999_9999_9999).toString(),
-    type: pl.inpost.shipment.implementation.data.remote.ShipmentType = pl.inpost.shipment.implementation.data.remote.ShipmentType.PARCEL_LOCKER,
-    status: pl.inpost.shipment.implementation.data.remote.ShipmentStatus = pl.inpost.shipment.implementation.data.remote.ShipmentStatus.DELIVERED,
+    type: ShipmentType = ShipmentType.PARCEL_LOCKER,
+    status: ShipmentStatus = ShipmentStatus.DELIVERED,
     sender: pl.inpost.shipment.implementation.data.remote.CustomerNetwork? = mockCustomerNetwork(),
     receiver: pl.inpost.shipment.implementation.data.remote.CustomerNetwork? = mockCustomerNetwork(),
     operations: pl.inpost.shipment.implementation.data.remote.OperationsNetwork = mockOperationsNetwork(),
@@ -54,7 +56,7 @@ private fun mockShipmentNetwork(
     expireDate: ZonedDateTime? = null,
     storedDate: ZonedDateTime? = null,
     pickupDate: ZonedDateTime? = null
-) = pl.inpost.shipment.implementation.data.remote.ShipmentNetwork(
+) = ShipmentNetwork(
     number = number,
     shipmentType = type.name,
     status = status.name,

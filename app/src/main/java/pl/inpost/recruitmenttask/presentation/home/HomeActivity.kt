@@ -2,17 +2,14 @@ package pl.inpost.recruitmenttask.presentation.home
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import pl.inpost.design_system.theme.InPostTheme
 import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentListScreen
+import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentListViewModel
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -28,7 +25,8 @@ class HomeActivity : AppCompatActivity() {
     @Composable
     fun HomeActivityContent() {
         InPostTheme {
-            ShipmentListScreen()
+            val shipmentListViewModel: ShipmentListViewModel by viewModels()
+            ShipmentListScreen(shipmentListViewModel)
         }
     }
 }

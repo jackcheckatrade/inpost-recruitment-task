@@ -54,6 +54,7 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+inject-annotation = { group = "javax.inject", name = "javax.inject", version = "1" }
 
 # Compose
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose" }
