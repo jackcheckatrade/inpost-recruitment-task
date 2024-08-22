@@ -7,10 +7,15 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.plugin.use.PluginDependency
+import java.util.Optional
 
 val Project.libs
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
+
+val Optional<Provider<PluginDependency>>.pluginId: String
+    get() = this.get().get().pluginId
 
 fun DependencyHandlerScope.implementation(dependency: Provider<MinimalExternalModuleDependency>): Dependency? {
     return add("implementation", dependency)

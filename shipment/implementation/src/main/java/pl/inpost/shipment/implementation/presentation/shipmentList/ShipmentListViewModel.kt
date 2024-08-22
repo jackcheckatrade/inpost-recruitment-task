@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pl.inpost.shipment.implementation.data.api.ShipmentApi
 import pl.inpost.shipment.implementation.data.remote.ShipmentNetwork
@@ -19,6 +21,9 @@ class ShipmentListViewModel @Inject constructor(
     private val mutableViewState = MutableLiveData<List<ShipmentNetwork>>(emptyList())
     val viewState: LiveData<List<ShipmentNetwork>> = mutableViewState
 
+    private val _sss by lazy { MutableStateFlow("") }
+        val sss = _sss.asStateFlow()
+
     init {
         refreshData()
     }
@@ -26,6 +31,7 @@ class ShipmentListViewModel @Inject constructor(
     private fun refreshData() {
         GlobalScope.launch(Dispatchers.Main) {
             val shipments = shipmentApi.getShipments()
+            mutableViewState.postValue(shipments)
         }
     }
 }

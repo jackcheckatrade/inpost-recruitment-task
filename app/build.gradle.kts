@@ -1,9 +1,14 @@
 plugins {
-    alias(libs.plugins.inpost.android.library)
+    alias(libs.plugins.inpost.android.application)
 }
 
 android {
-    namespace = "pl.inpost.shipment.implementation"
+    defaultConfig {
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
     buildTypes {
         release {
@@ -14,20 +19,17 @@ android {
             )
         }
     }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
-
-    implementation(project(":core:common"))
     implementation(project(":core:android-common"))
+    implementation(project(":core:design-system"))
+    implementation(project(":core:common"))
+    implementation(project(":shipment:implementation"))
     implementation(project(":shipment:api"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
