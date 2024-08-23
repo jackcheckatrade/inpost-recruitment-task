@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import pl.inpost.shipment.api.ShipmentRepository
 import pl.inpost.shipment.api.model.Shipment
 import pl.inpost.shipment.implementation.data.local.ShipmentDao
-import pl.inpost.shipment.implementation.data.local.model.ShipmentWithSenderAndReceiver
+import pl.inpost.shipment.implementation.data.local.model.ShipmentLocal
 import pl.inpost.shipment.implementation.data.remote.api.ShipmentApi
 import javax.inject.Inject
 
@@ -27,13 +27,13 @@ class MockedNetworkShipmentRepository @Inject constructor(
             val shipments = shipmentApi.getShipments().map {
                 it.toDomain()
             }
-            val archivedShipments = shipmentDao.getShipments().filter { it.shipment.manualArchive }
+            val archivedShipments = shipmentDao.getShipments().filter { it.manualArchive }
             shipmentDao.insertShipments(
                 shipments.map { shipment ->
-                    if (shipment.number in archivedShipments.map { it.shipment.number }) {
+                    if (shipment.number in archivedShipments.map { it.number }) {
                         shipment.copy(operations = shipment.operations.copy(manualArchive = true))
                     } else shipment
-                }.map { ShipmentWithSenderAndReceiver(it) }
+                }.map { ShipmentLocal(it) }
             )
         }
 

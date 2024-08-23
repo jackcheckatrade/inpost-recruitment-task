@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d7ab7c7552704f74803b8fc72e2eaebd",
+    "identityHash": "cf0a2f10b2225775330edb22108ba014",
     "entities": [
       {
         "tableName": "shipments",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `status` INTEGER NOT NULL, `openCode` TEXT, `expiryDate` TEXT, `storedDate` TEXT, `pickUpDate` TEXT, `receiverEmail` TEXT, `senderEmail` TEXT, `manualArchive` INTEGER NOT NULL, `delete` INTEGER NOT NULL, `collect` INTEGER NOT NULL, `highlight` INTEGER NOT NULL, `expandAvizo` INTEGER NOT NULL, `endOfWeekCollection` INTEGER NOT NULL, PRIMARY KEY(`number`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `status` INTEGER NOT NULL, `openCode` TEXT, `expiryDate` TEXT, `storedDate` TEXT, `pickUpDate` TEXT, `receiverEmail` TEXT, `receiverName` TEXT, `receiverPhone` TEXT, `senderEmail` TEXT, `senderName` TEXT, `senderPhone` TEXT, `manualArchive` INTEGER NOT NULL, `delete` INTEGER NOT NULL, `collect` INTEGER NOT NULL, `highlight` INTEGER NOT NULL, `expandAvizo` INTEGER NOT NULL, `endOfWeekCollection` INTEGER NOT NULL, PRIMARY KEY(`number`))",
         "fields": [
           {
             "fieldPath": "number",
@@ -51,8 +51,32 @@
             "notNull": false
           },
           {
+            "fieldPath": "receiverName",
+            "columnName": "receiverName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "receiverPhone",
+            "columnName": "receiverPhone",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "senderEmail",
             "columnName": "senderEmail",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderName",
+            "columnName": "senderName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderPhone",
+            "columnName": "senderPhone",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -101,44 +125,12 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "customers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`email` TEXT NOT NULL, `phoneNumber` TEXT, `name` TEXT, PRIMARY KEY(`email`))",
-        "fields": [
-          {
-            "fieldPath": "email",
-            "columnName": "email",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "phoneNumber",
-            "columnName": "phoneNumber",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "email"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd7ab7c7552704f74803b8fc72e2eaebd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cf0a2f10b2225775330edb22108ba014')"
     ]
   }
 }

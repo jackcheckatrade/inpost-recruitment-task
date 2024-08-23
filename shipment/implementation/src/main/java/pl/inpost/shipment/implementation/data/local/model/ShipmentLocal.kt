@@ -18,7 +18,11 @@ data class ShipmentLocal(
     val storedDate: ZonedDateTime?,
     val pickUpDate: ZonedDateTime?,
     val receiverEmail: String?,
+    val receiverName: String?,
+    val receiverPhone: String?,
     val senderEmail: String?,
+    val senderName: String?,
+    val senderPhone: String?,
     val manualArchive: Boolean,
     val delete: Boolean,
     val collect: Boolean,
@@ -35,6 +39,10 @@ data class ShipmentLocal(
         pickUpDate = shipment.pickUpDate,
         receiverEmail = shipment.receiver?.email,
         senderEmail = shipment.sender?.email,
+        receiverName = shipment.receiver?.name,
+        senderName = shipment.sender?.name,
+        receiverPhone = shipment.receiver?.phoneNumber,
+        senderPhone = shipment.sender?.phoneNumber,
         manualArchive = shipment.operations.manualArchive,
         delete = shipment.operations.delete,
         collect = shipment.operations.collect,
@@ -43,18 +51,23 @@ data class ShipmentLocal(
         endOfWeekCollection = shipment.operations.endOfWeekCollection
     )
 
-    fun toDomain(
-        receiver: Customer?,
-        sender: Customer?
-    ) = Shipment(
+    fun toDomain() = Shipment(
         number = number,
         status = status,
         openCode = openCode,
         expiryDate = expiryDate,
         storedDate = storedDate,
         pickUpDate = pickUpDate,
-        receiver = receiver,
-        sender = sender,
+        receiver = Customer(
+            email = receiverEmail,
+            name = receiverName,
+            phoneNumber = receiverPhone
+        ),
+        sender = Customer(
+            email = senderEmail,
+            name = senderName,
+            phoneNumber = senderPhone
+        ),
         operations = Operations(
             manualArchive = manualArchive,
             delete = delete,
