@@ -6,7 +6,7 @@ import javax.inject.Inject
 class RefreshShipmentsUseCase @Inject constructor(
     private val shipmentRepository: ShipmentRepository
 ) {
-    suspend operator fun invoke() {
+    suspend operator fun invoke() = runCatching {
         shipmentRepository.fetchShipments()
     }
 }

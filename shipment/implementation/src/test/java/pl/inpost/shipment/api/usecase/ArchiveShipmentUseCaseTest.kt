@@ -1,4 +1,4 @@
-package pl.inpost.shipment.implementation.usecase
+package pl.inpost.shipment.api.usecase
 
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -10,7 +10,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import pl.inpost.shipment.api.ShipmentRepository
-import pl.inpost.shipment.api.usecase.ArchiveShipmentUseCase
 import pl.inpost.shipment.implementation.utils.MainCoroutineRule
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,5 +39,19 @@ class ArchiveShipmentUseCaseTest {
 
         // then
         coVerify { shipmentRepository.archiveShipment(shipmentId) }
+    }
+
+    @Test
+    fun `archiveShipment should return Failure`() = runTest {
+        // given
+        coEvery { shipmentRepository.archiveShipment(any()) } throws Exception()
+        val shipmentId = "shipmentId"
+
+        // when
+        val result = usecase(shipmentId)
+        advanceUntilIdle()
+
+        // then
+        assert(result.isFailure)
     }
 }

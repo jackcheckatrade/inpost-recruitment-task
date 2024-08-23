@@ -33,4 +33,18 @@ class RefreshShipmentsUseCaseTest {
         // then
         coVerify { shipmentRepository.fetchShipments() }
     }
+
+
+    @Test
+    fun `refreshShipments should return Failure`() = runTest {
+        // given
+        coEvery { shipmentRepository.fetchShipments() } throws Exception()
+
+        // when
+        val result = usecase()
+        advanceUntilIdle()
+
+        // then
+        assert(result.isFailure)
+    }
 }

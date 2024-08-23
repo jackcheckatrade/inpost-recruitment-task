@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.inpost.shipment.api.usecase.ArchiveShipmentUseCase
@@ -56,40 +57,77 @@ class ShipmentListViewModel @Inject constructor(
     override fun archiveShipment(shipmentId: String) {
         viewModelScope.launch {
             archiveShipmentUseCase(shipmentId)
+                .onFailure {
+                    showErrorSnackbar()
+                }
+        }
+    }
+
+    override fun onErrorSnackbarShown() {
+        _viewState.update {
+            it.copy(
+                isErrorSnackbarShown = false
+            )
         }
     }
 
     private fun refreshShipments() {
         viewModelScope.launch {
             refreshShipmentsUseCase()
+                .onSuccess {
+                    hideLoadingIndicators()
+                }
+                .onFailure {
+                    hideLoadingIndicators()
+                    showErrorSnackbar()
+                }
         }
     }
 
     private fun observeShipments() {
         shipmentsJob?.cancel()
         shipmentsJob = viewModelScope.launch {
-            observeGroupedAndSortedShipmentsUseCase().collect { shipments ->
-                _viewState.update { state ->
-                    state.copy(
-                        highlightedShipments = shipments[true]?.map {
-                            ShipmentDisplayable.fromDomain(
-                                it,
-                                shipmentStatusMapper,
-                                dateFormatter
-                            )
-                        } ?: emptyList(),
-                        shipments = shipments[false]?.map {
-                            ShipmentDisplayable.fromDomain(
-                                it,
-                                shipmentStatusMapper,
-                                dateFormatter
-                            )
-                        } ?: emptyList(),
-                        isLoading = false,
-                        isSwipeRefreshing = false
-                    )
+            observeGroupedAndSortedShipmentsUseCase()
+                .catch { showErrorSnackbar() }
+                .collect { shipments ->
+                    _viewState.update { state ->
+                        state.copy(
+                            highlightedShipments = shipments[true]?.map {
+                                ShipmentDisplayable.fromDomain(
+                                    it,
+                                    shipmentStatusMapper,
+                                    dateFormatter
+                                )
+                            } ?: emptyList(),
+                            shipments = shipments[false]?.map {
+                                ShipmentDisplayable.fromDomain(
+                                    it,
+                                    shipmentStatusMapper,
+                                    dateFormatter
+                                )
+                            } ?: emptyList(),
+                            isLoading = false,
+                            isSwipeRefreshing = false
+                        )
+                    }
                 }
-            }
+        }
+    }
+
+    private fun hideLoadingIndicators() {
+        _viewState.update {
+            it.copy(
+                isLoading = false,
+                isSwipeRefreshing = false
+            )
+        }
+    }
+
+    private fun showErrorSnackbar() {
+        _viewState.update {
+            it.copy(
+                isErrorSnackbarShown = true
+            )
         }
     }
 }

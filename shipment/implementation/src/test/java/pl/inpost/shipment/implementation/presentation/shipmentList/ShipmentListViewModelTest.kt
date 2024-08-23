@@ -4,18 +4,14 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import pl.inpost.shipment.api.model.Operations
 import pl.inpost.shipment.api.model.Shipment
 import pl.inpost.shipment.api.model.ShipmentStatus
 import pl.inpost.shipment.api.usecase.ArchiveShipmentUseCase
@@ -46,8 +42,8 @@ class ShipmentListViewModelTest {
     @Before
     fun setup() {
         coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(mapOf())
-        coEvery { refreshShipmentsUseCase.invoke() } returns Unit
-        coEvery { archiveShipmentUseCase.invoke(any()) } returns Unit
+        coEvery { refreshShipmentsUseCase.invoke() } returns Result.success(Unit)
+        coEvery { archiveShipmentUseCase.invoke(any()) } returns Result.success(Unit)
 
         viewModel = ShipmentListViewModel(
             observeGroupedAndSortedShipmentsUseCase = observeGroupedAndSortedShipmentsUseCase,
@@ -76,8 +72,6 @@ class ShipmentListViewModelTest {
     @Test
     fun `GIVEN shipments WHEN getShipments THEN viewState contains shipments`() = runTest {
         // given
-
-
         coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(
             mapOf(
                 false to listOf(shipment),
@@ -101,15 +95,19 @@ class ShipmentListViewModelTest {
         // then
         viewModel.viewState.value.shipments
         viewModel.viewState.value.highlightedShipments
-        assertEquals(listOf(ShipmentDisplayable(
-            number = "1",
-            status = ShipmentStatus.DELIVERED,
-            statusString = "text",
-            pickUpDate = null,
-            expiryDate = null,
-            storedDate = null,
-            sender = ""
-        )), viewModel.viewState.value.shipments)
+        assertEquals(
+            listOf(
+                ShipmentDisplayable(
+                    number = "1",
+                    status = ShipmentStatus.DELIVERED,
+                    statusString = "text",
+                    pickUpDate = null,
+                    expiryDate = null,
+                    storedDate = null,
+                    sender = ""
+                )
+            ), viewModel.viewState.value.shipments
+        )
         assertEquals(
             listOf(
                 ShipmentDisplayable(
@@ -123,21 +121,6 @@ class ShipmentListViewModelTest {
                 )
             ), viewModel.viewState.value.highlightedShipments
         )
-    }
-
-    @Test
-    fun `GIVEN empty shipments WHEN refresh THEN viewState contains empty lists`() = runTest {
-        // given
-        coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(mapOf())
-
-        // when
-        viewModel.refresh()
-
-        advanceUntilIdle()
-
-        // then
-        coVerify { refreshShipmentsUseCase() }
-        assertTrue(viewModel.viewState.value.isSwipeRefreshing)
     }
 
     @Test

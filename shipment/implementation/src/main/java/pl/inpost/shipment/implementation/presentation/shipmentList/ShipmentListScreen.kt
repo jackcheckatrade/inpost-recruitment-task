@@ -19,6 +19,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -26,11 +28,14 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,18 +62,12 @@ fun ShipmentListScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
-        // Create an observer that triggers our remembered callbacks
-        // for sending analytics events
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
                 viewModel.onStart()
             }
         }
-
-        // Add the observer to the lifecycle
         lifecycleOwner.lifecycle.addObserver(observer)
-
-        // When the effect leaves the Composition, remove the observer
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
@@ -77,7 +76,8 @@ fun ShipmentListScreen(
     ShipmentListScreenContent(
         viewState,
         onPullToRefresh = viewModel::refresh,
-        archiveShipment = viewModel::archiveShipment
+        archiveShipment = viewModel::archiveShipment,
+        onSnackbarShown = viewModel::onErrorSnackbarShown
     )
 }
 
@@ -87,11 +87,24 @@ fun ShipmentListScreenContent(
     viewState: ShipmentList.ViewState,
     onPullToRefresh: () -> Unit,
     archiveShipment: (String) -> Unit,
+    onSnackbarShown: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = viewState.isErrorSnackbarShown) {
+        if (viewState.isErrorSnackbarShown) {
+            snackbarHostState.showSnackbar(context.getString(R.string.error_occurred))
+            onSnackbarShown()
+        }
+    }
     Scaffold(
         topBar = {
             SimpleAppBar(title = stringResource(id = R.string.app_name))
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         modifier = modifier
     ) { innerPadding ->

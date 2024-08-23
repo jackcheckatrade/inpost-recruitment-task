@@ -9,14 +9,16 @@ interface ShipmentList {
         val highlightedShipments: List<ShipmentDisplayable>,
         val shipments: List<ShipmentDisplayable>,
         val isLoading: Boolean,
-        val isSwipeRefreshing: Boolean
+        val isSwipeRefreshing: Boolean,
+        val isErrorSnackbarShown: Boolean
     ) {
         companion object {
             val DEFAULT_STATE = ViewState(
                 highlightedShipments = emptyList(),
                 shipments = emptyList(),
                 isLoading = false,
-                isSwipeRefreshing = false
+                isSwipeRefreshing = false,
+                isErrorSnackbarShown = false
             )
         }
 
@@ -28,5 +30,6 @@ interface ShipmentList {
         fun getShipments()
         fun refresh()
         fun archiveShipment(shipmentId: String)
+        fun onErrorSnackbarShown()
     }
 }

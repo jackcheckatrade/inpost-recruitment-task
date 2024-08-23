@@ -32,6 +32,8 @@
 
     <string name="no_shipments">No shipments</string>
 
+    <string name="error_occurred">Error occurred</string>
+
     <string name="ready_to_pickup_date_header">Awaiting collection until</string>
     <string name="delivered_date_header">Delivered</string>
     <string name="status_header">status</string>

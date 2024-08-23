@@ -6,7 +6,7 @@ import javax.inject.Inject
 class ArchiveShipmentUseCase @Inject constructor(
     private val shipmentRepository: ShipmentRepository
 ) {
-    suspend operator fun invoke(shipmentId: String) {
+    suspend operator fun invoke(shipmentId: String) = runCatching {
         shipmentRepository.archiveShipment(shipmentId)
     }
 }

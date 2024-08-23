@@ -15,28 +15,31 @@ class ObserveGroupedAndSortedShipmentsUseCase @Inject constructor(
         return shipmentRepository.observeShipments()
             .map {
                 it.filter { shipment: Shipment -> !shipment.operations.manualArchive }.sortedWith(
-                    compareBy(
-                        { it.status.priority },
-                        {
+                    compareByDescending<Shipment>
+                    { it.status.priority }
+                        .thenBy {
+                            // the closer to today, the greater the priority
                             abs(
                                 (it.pickUpDate?.toEpochSecond()
                                     ?: Long.MAX_VALUE) - ZonedDateTime.now().toEpochSecond()
                             )
-                        },
-                        {
+                        }
+                        .thenBy {
+                            // the closer to today, the greater the priority
                             abs(
                                 (it.expiryDate?.toEpochSecond()
                                     ?: Long.MAX_VALUE) - ZonedDateTime.now().toEpochSecond()
                             )
-                        },
-                        {
+                        }
+                        .thenBy {
+                            // the closer to today, the greater the priority
                             abs(
                                 (it.storedDate?.toEpochSecond()
                                     ?: Long.MAX_VALUE) - ZonedDateTime.now().toEpochSecond()
                             )
-                        },
-                        { it.number }
-                    )).reversed()
+                        }
+                        .thenBy { it.number }
+                )
                     .groupBy { it.operations.highlight }
             }
     }
