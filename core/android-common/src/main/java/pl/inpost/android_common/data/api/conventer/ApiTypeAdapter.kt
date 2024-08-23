@@ -1,4 +1,4 @@
-package pl.inpost.shipment.implementation.data.remote.api
+package pl.inpost.android_common.data.api.conventer
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson

@@ -52,7 +52,8 @@ fun ShipmentListScreen(
     val viewState by viewModel.viewState.collectAsState()
     ShipmentListScreenContent(
         viewState,
-        onPullToRefresh = viewModel::refresh
+        onPullToRefresh = viewModel::refresh,
+        archiveShipment = viewModel::archiveShipment
     )
 }
 
@@ -61,6 +62,7 @@ fun ShipmentListScreen(
 fun ShipmentListScreenContent(
     viewState: ShipmentList.ViewState,
     onPullToRefresh: () -> Unit,
+    archiveShipment: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -119,10 +121,16 @@ fun ShipmentListScreenContent(
                                     modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
                                 )
                             }
-                        itemsIndexed(viewState.highlightedShipments) { index, shipment ->
+                        itemsIndexed(
+                            viewState.highlightedShipments,
+                            key = { _, shipment -> shipment.number }
+                        ) { index, shipment ->
                             ShipmentCard(
                                 shipment = shipment,
-                                onDetailsButtonClick = {}
+                                onDetailsButtonClick = {
+                                    archiveShipment(shipment.number)
+                                },
+                                modifier = Modifier.animateItem()
                             )
                             if (index < viewState.highlightedShipments.size - 1)
                                 Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
@@ -134,10 +142,16 @@ fun ShipmentListScreenContent(
                                     modifier = Modifier.padding(vertical = InPostTheme.dimensSystem.x4)
                                 )
                             }
-                        items(viewState.shipments) { shipment ->
+                        items(
+                            viewState.shipments,
+                            key = { it.number }
+                        ) { shipment ->
                             ShipmentCard(
                                 shipment = shipment,
-                                onDetailsButtonClick = {}
+                                onDetailsButtonClick = {
+                                    archiveShipment(shipment.number)
+                                },
+                                modifier = Modifier.animateItem()
                             )
                             Spacer(modifier = Modifier.height(InPostTheme.dimensSystem.x4))
                         }
@@ -237,8 +251,8 @@ fun ShipmentCard(
 fun TitleWithValue(
     title: String,
     value: String,
+    modifier: Modifier = Modifier,
     bold: Boolean = true,
-    modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         Text(
@@ -353,6 +367,7 @@ private fun ShipmentListScreenPreview() {
                 )
             )
         ),
-        onPullToRefresh = {}
+        onPullToRefresh = {},
+        archiveShipment = {}
     )
 }

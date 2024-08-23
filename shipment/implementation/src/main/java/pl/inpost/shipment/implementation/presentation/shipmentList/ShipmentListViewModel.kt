@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.inpost.shipment.api.usecase.ObserveGroupedAndSortedShipments
+import pl.inpost.shipment.api.usecase.ArchiveShipmentUseCase
+import pl.inpost.shipment.api.usecase.ObserveGroupedAndSortedShipmentsUseCase
 import pl.inpost.shipment.api.usecase.RefreshShipmentsUseCase
 import pl.inpost.shipment.implementation.presentation.DateFormatter
 import pl.inpost.shipment.implementation.presentation.model.ShipmentDisplayable
@@ -16,8 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShipmentListViewModel @Inject constructor(
-    private val observeGroupedAndSortedShipments: ObserveGroupedAndSortedShipments,
+    private val observeGroupedAndSortedShipmentsUseCase: ObserveGroupedAndSortedShipmentsUseCase,
     private val refreshShipmentsUseCase: RefreshShipmentsUseCase,
+    private val archiveShipmentUseCase: ArchiveShipmentUseCase,
     private val dateFormatter: DateFormatter,
     private val shipmentStatusMapper: ShipmentStatusMapper
 ) : ViewModel(), ShipmentList.Interaction {
@@ -49,7 +51,9 @@ class ShipmentListViewModel @Inject constructor(
     }
 
     override fun archiveShipment(shipmentId: String) {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            archiveShipmentUseCase(shipmentId)
+        }
     }
 
     private fun refreshShipments() {
@@ -60,7 +64,7 @@ class ShipmentListViewModel @Inject constructor(
 
     private fun observeShipments() {
         viewModelScope.launch {
-            observeGroupedAndSortedShipments().collect { shipments ->
+            observeGroupedAndSortedShipmentsUseCase().collect { shipments ->
                 _viewState.update { state ->
                     state.copy(
                         highlightedShipments = shipments[true]?.map {

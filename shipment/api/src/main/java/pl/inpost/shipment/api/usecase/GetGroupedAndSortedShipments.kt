@@ -8,13 +8,13 @@ import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlin.math.abs
 
-class ObserveGroupedAndSortedShipments @Inject constructor(
+class ObserveGroupedAndSortedShipmentsUseCase @Inject constructor(
     private val shipmentRepository: ShipmentRepository
 ) {
     suspend operator fun invoke(): Flow<Map<Boolean, List<Shipment>>> {
         return shipmentRepository.observeShipments()
             .map {
-                it.sortedWith(
+                it.filter { shipment: Shipment -> !shipment.operations.manualArchive }.sortedWith(
                     compareBy(
                         { it.status.priority },
                         {

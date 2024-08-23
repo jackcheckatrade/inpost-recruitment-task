@@ -15,7 +15,10 @@ interface ShipmentDao {
     suspend fun insertShipments(vararg shipments: ShipmentLocal)
 
     @Query("SELECT * FROM shipments")
-    fun getShipments(): Flow<List<ShipmentLocal>>
+    fun observeShipments(): Flow<List<ShipmentLocal>>
+
+    @Query("SELECT * FROM shipments")
+    fun getShipments(): List<ShipmentLocal>
 
     @Query("SELECT * FROM customers WHERE email = :email LIMIT 1")
     suspend fun getCustomer(email: String): CustomerLocal?

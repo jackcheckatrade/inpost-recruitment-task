@@ -8,7 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import pl.inpost.shipment.implementation.data.remote.api.ApiTypeAdapter
+import pl.inpost.android_common.data.api.conventer.ApiTypeAdapter
 import pl.inpost.shipment.implementation.data.remote.api.MockShipmentApi
 import pl.inpost.shipment.implementation.data.remote.api.ShipmentApi
 import pl.inpost.shipment.implementation.data.remote.api.ShipmentStatusJsonAdapter

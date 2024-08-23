@@ -1,11 +1,10 @@
-package pl.inpost.shipment.implementation.data.local.converter
+package pl.inpost.android_common.data.local.converter
 
 import androidx.room.TypeConverter
-import pl.inpost.shipment.api.model.ShipmentStatus
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class Converters {
+class DatabaseCommonConverters {
     private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
     @TypeConverter
@@ -13,10 +12,5 @@ class Converters {
 
     @TypeConverter
     fun fromZonedDateTime(date: ZonedDateTime?): String? = date?.format(formatter)
-
-    @TypeConverter
-    fun toStatus(value: Int): ShipmentStatus = ShipmentStatus.entries.first { it.priority == value }
-
-    @TypeConverter
-    fun fromStatus(status: ShipmentStatus): Int = status.priority
 }
+
