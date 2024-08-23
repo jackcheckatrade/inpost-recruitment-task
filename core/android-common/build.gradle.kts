@@ -20,11 +20,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.kotlin.bom))
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.moshi.kotlin)
-    ksp(libs.moshi.kotlin.codegen)
 }
