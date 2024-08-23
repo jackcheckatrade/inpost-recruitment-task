@@ -18,9 +18,21 @@ data class ShipmentNetwork(
     val sender: CustomerNetwork?,
     val operations: OperationsNetwork
 ) {
+    constructor(shipment: Shipment) : this(
+        number = shipment.number,
+        shipmentType = "parcel",
+        status = shipment.status,
+        openCode = shipment.openCode,
+        expiryDate = shipment.expiryDate,
+        storedDate = shipment.storedDate,
+        pickUpDate = shipment.pickUpDate,
+        receiver = shipment.receiver?.let { CustomerNetwork(it) },
+        sender = shipment.sender?.let { CustomerNetwork(it) },
+        operations = OperationsNetwork(shipment.operations)
+    )
+
     fun toDomain(): Shipment = Shipment(
         number = number,
-        shipmentType = shipmentType,
         status = status,
         openCode = openCode,
         expiryDate = expiryDate,

@@ -24,6 +24,7 @@ interface ShipmentList {
     }
 
     interface Interaction {
+        fun onStart()
         fun getShipments()
         fun refresh()
         fun archiveShipment(shipmentId: String)

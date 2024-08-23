@@ -3,6 +3,7 @@ package pl.inpost.shipment.implementation.presentation.shipmentList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -27,7 +28,9 @@ class ShipmentListViewModel @Inject constructor(
     private val _viewState by lazy { MutableStateFlow(DEFAULT_STATE) }
     val viewState = _viewState.asStateFlow()
 
-    init {
+    private var shipmentsJob: Job? = null
+
+    override fun onStart() {
         observeShipments()
         getShipments()
     }
@@ -63,7 +66,8 @@ class ShipmentListViewModel @Inject constructor(
     }
 
     private fun observeShipments() {
-        viewModelScope.launch {
+        shipmentsJob?.cancel()
+        shipmentsJob = viewModelScope.launch {
             observeGroupedAndSortedShipmentsUseCase().collect { shipments ->
                 _viewState.update { state ->
                     state.copy(

@@ -12,7 +12,6 @@ import java.time.ZonedDateTime
 data class ShipmentLocal(
     @PrimaryKey
     val number: String,
-    val shipmentType: String,
     val status: ShipmentStatus,
     val openCode: String?,
     val expiryDate: ZonedDateTime?,
@@ -29,7 +28,6 @@ data class ShipmentLocal(
 ) {
     constructor(shipment: Shipment) : this(
         number = shipment.number,
-        shipmentType = shipment.shipmentType,
         status = shipment.status,
         openCode = shipment.openCode,
         expiryDate = shipment.expiryDate,
@@ -50,7 +48,6 @@ data class ShipmentLocal(
         sender: Customer?
     ) = Shipment(
         number = number,
-        shipmentType = shipmentType,
         status = status,
         openCode = openCode,
         expiryDate = expiryDate,

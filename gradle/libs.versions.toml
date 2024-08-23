@@ -41,6 +41,9 @@ kotlinJvm = "2.0.0"
 kotlinFlow = "1.9.0-RC.2"
 ksp = "2.0.0-1.0.24"
 roomGradlePlugin = "2.6.1"
+mockk = "1.13.7"
+coroutineTest = "1.6.4"
+turbine = "0.7.0"
 
 
 [libraries]
@@ -58,6 +61,9 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 inject-annotation = { group = "javax.inject", name = "javax.inject", version = "1" }
 kotlin-flow = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinFlow" }
+android-test-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # Compose
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose" }
