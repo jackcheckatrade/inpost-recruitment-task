@@ -2,21 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "26e16389bcf4095872bc75e20185e782",
+    "identityHash": "d7ab7c7552704f74803b8fc72e2eaebd",
     "entities": [
       {
         "tableName": "shipments",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `shipmentType` TEXT NOT NULL, `status` INTEGER NOT NULL, `openCode` TEXT, `expiryDate` TEXT, `storedDate` TEXT, `pickUpDate` TEXT, `receiverEmail` TEXT, `senderEmail` TEXT, `manualArchive` INTEGER NOT NULL, `delete` INTEGER NOT NULL, `collect` INTEGER NOT NULL, `highlight` INTEGER NOT NULL, `expandAvizo` INTEGER NOT NULL, `endOfWeekCollection` INTEGER NOT NULL, PRIMARY KEY(`number`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`number` TEXT NOT NULL, `status` INTEGER NOT NULL, `openCode` TEXT, `expiryDate` TEXT, `storedDate` TEXT, `pickUpDate` TEXT, `receiverEmail` TEXT, `senderEmail` TEXT, `manualArchive` INTEGER NOT NULL, `delete` INTEGER NOT NULL, `collect` INTEGER NOT NULL, `highlight` INTEGER NOT NULL, `expandAvizo` INTEGER NOT NULL, `endOfWeekCollection` INTEGER NOT NULL, PRIMARY KEY(`number`))",
         "fields": [
           {
             "fieldPath": "number",
             "columnName": "number",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "shipmentType",
-            "columnName": "shipmentType",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -144,7 +138,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '26e16389bcf4095872bc75e20185e782')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd7ab7c7552704f74803b8fc72e2eaebd')"
     ]
   }
 }
