@@ -42,6 +42,20 @@ class ArchiveShipmentUseCaseTest {
     }
 
     @Test
+    fun `archiveShipment should call repository unarchiveShipment when unarchive set`() = runTest {
+        // given
+        val shipmentId = "shipmentId"
+
+        // when
+        usecase(shipmentId, unarchive = true)
+        advanceUntilIdle()
+
+        // then
+        coVerify { shipmentRepository.unarchiveShipment(shipmentId) }
+    }
+
+
+    @Test
     fun `archiveShipment should return Failure`() = runTest {
         // given
         coEvery { shipmentRepository.archiveShipment(any()) } throws Exception()

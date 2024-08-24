@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.inpost.android_common.navigation.Navigator
+import pl.inpost.android_common.navigation.Screen
 import pl.inpost.shipment.api.usecase.ArchiveShipmentUseCase
 import pl.inpost.shipment.api.usecase.ObserveGroupedAndSortedShipmentsUseCase
 import pl.inpost.shipment.api.usecase.RefreshShipmentsUseCase
@@ -23,10 +25,15 @@ class ShipmentListViewModel @Inject constructor(
     private val refreshShipmentsUseCase: RefreshShipmentsUseCase,
     private val archiveShipmentUseCase: ArchiveShipmentUseCase,
     private val dateFormatter: DateFormatter,
-    private val shipmentStatusMapper: ShipmentStatusMapper
+    private val shipmentStatusMapper: ShipmentStatusMapper,
+    private val navigator: Navigator
 ) : ViewModel(), ShipmentList.Interaction {
 
-    private val _viewState by lazy { MutableStateFlow(DEFAULT_STATE) }
+    private val _viewState by lazy {
+        MutableStateFlow(
+            DEFAULT_STATE
+        )
+    }
     val viewState = _viewState.asStateFlow()
 
     private var shipmentsJob: Job? = null
@@ -54,7 +61,7 @@ class ShipmentListViewModel @Inject constructor(
         refreshShipments()
     }
 
-    override fun archiveShipment(shipmentId: String) {
+    override fun onMoreClicked(shipmentId: String) {
         viewModelScope.launch {
             archiveShipmentUseCase(shipmentId)
                 .onFailure {
@@ -69,6 +76,10 @@ class ShipmentListViewModel @Inject constructor(
                 isErrorSnackbarShown = false
             )
         }
+    }
+
+    override fun onArchiveClicked() {
+        navigator.navigateTo(Screen.ArchivedShipmentList)
     }
 
     private fun refreshShipments() {

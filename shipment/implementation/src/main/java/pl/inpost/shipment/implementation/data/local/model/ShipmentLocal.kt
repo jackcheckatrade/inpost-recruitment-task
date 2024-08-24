@@ -58,16 +58,20 @@ data class ShipmentLocal(
         expiryDate = expiryDate,
         storedDate = storedDate,
         pickUpDate = pickUpDate,
-        receiver = Customer(
-            email = receiverEmail,
-            name = receiverName,
-            phoneNumber = receiverPhone
-        ),
-        sender = Customer(
-            email = senderEmail,
-            name = senderName,
-            phoneNumber = senderPhone
-        ),
+        receiver = receiverEmail?.let {
+            receiverName?.let {
+                receiverPhone?.let {
+                    Customer(receiverEmail, receiverPhone, receiverName)
+                }
+            }
+        },
+        sender = senderEmail?.let {
+            senderName?.let {
+                senderPhone?.let {
+                    Customer(senderEmail, senderPhone, senderName)
+                }
+            }
+        },
         operations = Operations(
             manualArchive = manualArchive,
             delete = delete,

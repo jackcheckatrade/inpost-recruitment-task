@@ -11,17 +11,22 @@ import kotlin.math.abs
 class ObserveGroupedAndSortedShipmentsUseCase @Inject constructor(
     private val shipmentRepository: ShipmentRepository
 ) {
-    suspend operator fun invoke(): Flow<Map<Boolean, List<Shipment>>> {
+    suspend operator fun invoke(showArchived: Boolean = false): Flow<Map<Boolean, List<Shipment>>> {
         return shipmentRepository.observeShipments()
             .map {
-                it.filter { shipment: Shipment ->!shipment.operations.manualArchive }.sortedWith(
-                    compareByDescending<Shipment>
-                    { it.status.priority }
-                        .thenBy { calculateDatePriority(it.pickUpDate) }
-                        .thenBy { calculateDatePriority(it.expiryDate) }
-                        .thenBy { calculateDatePriority(it.storedDate) }
-                        .thenBy { it.number }
-                ).groupBy { it.operations.highlight }
+                it.filter { shipment: Shipment ->
+                    if (showArchived)
+                        shipment.operations.manualArchive
+                    else !shipment.operations.manualArchive
+                }
+                    .sortedWith(
+                        compareByDescending<Shipment>
+                        { it.status.priority }
+                            .thenBy { calculateDatePriority(it.pickUpDate) }
+                            .thenBy { calculateDatePriority(it.expiryDate) }
+                            .thenBy { calculateDatePriority(it.storedDate) }
+                            .thenBy { it.number }
+                    ).groupBy { it.operations.highlight }
             }
     }
 

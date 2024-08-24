@@ -41,4 +41,5 @@
     <string name="sender_header">Sender</string>
 
     <string name="more">more</string>
+    <string name="archived">Archived shipments</string>
 </resources>

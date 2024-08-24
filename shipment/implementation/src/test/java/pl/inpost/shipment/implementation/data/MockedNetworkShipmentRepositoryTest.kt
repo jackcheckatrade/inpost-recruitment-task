@@ -77,8 +77,14 @@ class MockedNetworkShipmentRepositoryTest {
                 number = "1",
                 operations = shipment.operations.copy(manualArchive = true)
             ),
-            shipment.copy(number = "2"),
-            shipment.copy(number = "3")
+            shipment.copy(
+                number = "2",
+                operations = shipment.operations.copy(manualArchive = false)
+            ),
+            shipment.copy(
+                number = "3",
+                operations = shipment.operations.copy(manualArchive = false)
+            )
         )
         val shipmentNetworks =
             shipments.map {
@@ -98,7 +104,7 @@ class MockedNetworkShipmentRepositoryTest {
 
         coVerify {
             shipmentDao.insertShipments(
-                *shipmentLocals.toTypedArray()
+                shipmentLocals
             )
         }
     }

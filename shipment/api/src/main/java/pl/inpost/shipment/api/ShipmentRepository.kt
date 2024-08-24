@@ -7,4 +7,5 @@ interface ShipmentRepository {
     suspend fun observeShipments(): Flow<List<Shipment>>
     suspend fun fetchShipments()
     suspend fun archiveShipment(shipmentNumber: String)
+    suspend fun unarchiveShipment(shipmentNumber: String)
 }

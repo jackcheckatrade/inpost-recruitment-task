@@ -27,12 +27,18 @@ class MockedNetworkShipmentRepository @Inject constructor(
             val shipments = shipmentApi.getShipments().map {
                 it.toDomain()
             }
-            val archivedShipments = shipmentDao.getShipments().filter { it.manualArchive }
+            val localShipment = shipmentDao.getShipments()
             shipmentDao.insertShipments(
                 shipments.map { shipment ->
-                    if (shipment.number in archivedShipments.map { it.number }) {
-                        shipment.copy(operations = shipment.operations.copy(manualArchive = true))
-                    } else shipment
+                    val localManualArchive =
+                        localShipment.find { it.number == shipment.number }?.manualArchive
+                    localManualArchive?.let {
+                        shipment.copy(
+                            operations = shipment.operations.copy(
+                                manualArchive = localManualArchive
+                            )
+                        )
+                    } ?: shipment
                 }.map { ShipmentLocal(it) }
             )
         }
@@ -43,4 +49,12 @@ class MockedNetworkShipmentRepository @Inject constructor(
                 shipmentDao.insertShipments(it.copy(manualArchive = true))
             }
         }
+
+    override suspend fun unarchiveShipment(shipmentNumber: String) {
+        withContext(Dispatchers.IO) {
+            shipmentDao.getShipment(shipmentNumber)?.let {
+                shipmentDao.insertShipments(it.copy(manualArchive = false))
+            }
+        }
+    }
 }

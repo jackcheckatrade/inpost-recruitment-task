@@ -37,6 +37,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             dependencies {
                 implementation(libs.findLibrary("androidx.core.ktx").get())
                 implementation(libs.findLibrary("androidx.appcompat").get())
+                implementation(libs.findLibrary("compose.navigation").get())
 
                 implementation(libs.findLibrary("moshi.kotlin").get())
                 ksp(libs.findLibrary("moshi.kotlin.codegen").get())

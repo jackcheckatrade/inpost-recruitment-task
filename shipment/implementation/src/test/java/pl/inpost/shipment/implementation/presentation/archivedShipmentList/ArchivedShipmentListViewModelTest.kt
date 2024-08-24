@@ -1,4 +1,4 @@
-package pl.inpost.shipment.implementation.presentation.shipmentList
+package pl.inpost.shipment.implementation.presentation.archivedShipmentList
 
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -13,20 +13,20 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import pl.inpost.android_common.navigation.Navigator
-import pl.inpost.android_common.navigation.Screen
-import pl.inpost.shipment.api.model.Shipment
 import pl.inpost.shipment.api.model.ShipmentStatus
 import pl.inpost.shipment.api.usecase.ArchiveShipmentUseCase
 import pl.inpost.shipment.api.usecase.ObserveGroupedAndSortedShipmentsUseCase
 import pl.inpost.shipment.api.usecase.RefreshShipmentsUseCase
 import pl.inpost.shipment.implementation.presentation.DateFormatter
 import pl.inpost.shipment.implementation.presentation.model.ShipmentDisplayable
+import pl.inpost.shipment.implementation.presentation.shipmentList.ShipmentStatusMapper
 import pl.inpost.shipment.implementation.utils.MainCoroutineRule
 import pl.inpost.shipment.implementation.utils.highlightedShipment
 import pl.inpost.shipment.implementation.utils.shipment
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ShipmentListViewModelTest {
+class ArchivedShipmentListViewModelTest {
+
     @get:Rule
     val mainCoroutineRule = MainCoroutineRule()
 
@@ -40,43 +40,25 @@ class ShipmentListViewModelTest {
         every { getString(any()) } returns "text"
     })
 
-    private lateinit var viewModel: ShipmentListViewModel
+    private lateinit var viewModel: ArchivedShipmentListViewModel
 
     @Before
     fun setup() {
-        coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(mapOf())
         coEvery { refreshShipmentsUseCase.invoke() } returns Result.success(Unit)
-        coEvery { archiveShipmentUseCase.invoke(any()) } returns Result.success(Unit)
+        coEvery { archiveShipmentUseCase.invoke(any(), any()) } returns Result.success(Unit)
 
-        viewModel = ShipmentListViewModel(
+        viewModel = ArchivedShipmentListViewModel(
             observeGroupedAndSortedShipmentsUseCase = observeGroupedAndSortedShipmentsUseCase,
-            refreshShipmentsUseCase = refreshShipmentsUseCase,
             archiveShipmentUseCase = archiveShipmentUseCase,
             dateFormatter = dateFormatter,
             shipmentStatusMapper = shipmentStatusMapper,
-            navigator = navigator
         )
-    }
-
-    @Test
-    fun `GIVEN empty shipments WHEN getShipments THEN viewState contains empty lists`() = runTest {
-        // given
-        coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(mapOf())
-
-        // when
-        viewModel.getShipments()
-
-        advanceUntilIdle()
-
-        // then
-        assertEquals(emptyList<Shipment>(), viewModel.viewState.value.shipments)
-        assertEquals(emptyList<Shipment>(), viewModel.viewState.value.highlightedShipments)
     }
 
     @Test
     fun `GIVEN shipments WHEN getShipments THEN viewState contains shipments`() = runTest {
         // given
-        coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(
+        coEvery { observeGroupedAndSortedShipmentsUseCase.invoke(true) } returns flowOf(
             mapOf(
                 false to listOf(shipment),
                 true to listOf(highlightedShipment)
@@ -84,22 +66,12 @@ class ShipmentListViewModelTest {
         )
 
         // when
-        val viewModel = ShipmentListViewModel(
-            observeGroupedAndSortedShipmentsUseCase = observeGroupedAndSortedShipmentsUseCase,
-            refreshShipmentsUseCase = refreshShipmentsUseCase,
-            archiveShipmentUseCase = archiveShipmentUseCase,
-            dateFormatter = dateFormatter,
-            shipmentStatusMapper = shipmentStatusMapper,
-            navigator = navigator
-        )
-
         viewModel.onStart()
 
         advanceUntilIdle()
 
         // then
         viewModel.viewState.value.shipments
-        viewModel.viewState.value.highlightedShipments
         assertEquals(
             listOf(
                 ShipmentDisplayable(
@@ -110,11 +82,7 @@ class ShipmentListViewModelTest {
                     expiryDate = null,
                     storedDate = null,
                     sender = ""
-                )
-            ), viewModel.viewState.value.shipments
-        )
-        assertEquals(
-            listOf(
+                ),
                 ShipmentDisplayable(
                     number = "2",
                     status = ShipmentStatus.DELIVERED,
@@ -123,31 +91,24 @@ class ShipmentListViewModelTest {
                     expiryDate = null,
                     storedDate = null,
                     sender = ""
-                )
-            ), viewModel.viewState.value.highlightedShipments
+                ),
+            ), viewModel.viewState.value.shipments
         )
     }
 
     @Test
-    fun `GIVEN shipmentId WHEN archiveShipment THEN archiveShipmentUseCase is called`() = runTest {
-        // given
-        val shipmentId = "1"
+    fun `GIVEN shipmentId WHEN onMoreClicked THEN archiveShipmentUseCase with unarchive flag is called`() =
+        runTest {
+            coEvery { observeGroupedAndSortedShipmentsUseCase.invoke() } returns flowOf(mapOf())
 
-        // when
-        viewModel.onMoreClicked(shipmentId)
+            // given
+            val shipmentId = "1"
 
-        advanceUntilIdle()
-        // then
-        coVerify { archiveShipmentUseCase.invoke(shipmentId) }
-    }
+            // when
+            viewModel.onMoreClicked(shipmentId)
 
-    @Test
-    fun `WHEN onArchiveClicked THEN navigate to archived shipments`() = runTest {
-        // when
-        viewModel.onArchiveClicked()
-
-        advanceUntilIdle()
-        // then
-        coVerify { navigator.navigateTo(Screen.ArchivedShipmentList) }
-    }
+            advanceUntilIdle()
+            // then
+            coVerify { archiveShipmentUseCase.invoke(shipmentId, unarchive = true) }
+        }
 }

@@ -40,3 +40,22 @@ val highlightedShipment = Shipment(
     receiver = null,
     sender = null,
 )
+
+val archivedShipment = Shipment(
+    number = "3",
+    status = ShipmentStatus.DELIVERED,
+    pickUpDate = null,
+    expiryDate = null,
+    storedDate = null,
+    operations = Operations(
+        highlight = true,
+        manualArchive = true,
+        delete = false,
+        collect = false,
+        expandAvizo = false,
+        endOfWeekCollection = false,
+    ),
+    openCode = "",
+    receiver = null,
+    sender = null,
+)

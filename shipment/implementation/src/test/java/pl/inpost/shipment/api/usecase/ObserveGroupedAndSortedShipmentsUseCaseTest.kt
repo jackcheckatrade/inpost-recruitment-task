@@ -13,6 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import pl.inpost.shipment.api.ShipmentRepository
 import pl.inpost.shipment.implementation.utils.MainCoroutineRule
+import pl.inpost.shipment.implementation.utils.archivedShipment
 import pl.inpost.shipment.implementation.utils.highlightedShipment
 import pl.inpost.shipment.implementation.utils.shipment
 
@@ -49,10 +50,10 @@ class ObserveGroupedAndSortedShipmentsUseCaseTest {
     fun `GIVEN shipments WHEN getShipments THEN viewState contains map with shipments`() = runTest {
         // given
         coEvery { shipmentRepository.observeShipments() } returns flowOf(
-            listOf(shipment, highlightedShipment)
+            listOf(shipment, highlightedShipment, archivedShipment)
         )
         // when
-        val result = useCase.invoke()
+        val result = useCase.invoke(showArchived = true)
 
         advanceUntilIdle()
 
@@ -60,8 +61,7 @@ class ObserveGroupedAndSortedShipmentsUseCaseTest {
         result.test {
             assertEquals(
                 mapOf(
-                    false to listOf(shipment),
-                    true to listOf(highlightedShipment)
+                    true to listOf(archivedShipment)
                 ),
                 expectMostRecentItem()
             )
